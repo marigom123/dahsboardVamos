@@ -2,6 +2,13 @@
   import { ref, onMounted } from 'vue'
   import { io } from "socket.io-client";
   import Dialog from 'primevue/dialog';
+  import { useTienda } from "~/store/tienda";
+  
+  const storeTienda:any = useTienda()
+  const ls = ref(storeTienda.links)
+  const linked = ref()
+  const oldLink = ref()
+  
   const config = useRuntimeConfig()
   const socket = io(config.public.SOCKET);
   const sockt = ref()
@@ -19,6 +26,10 @@
       sockt.value = socket.id
       socket.emit('guardarSocketAdmin')
     });
+    socket.on('links', async(data:any) => {
+      console.log('se esta emitiendo pedir links')
+      storeTienda.setLinks(data)
+    })
     socket.on("updateAdmins", (data:any) => {
       console.log('Ahora llego el socket de actualizar admins')
       admins.value = data
@@ -37,6 +48,17 @@
       }
     });
   })
+  const guardarNuvoLink = (valor:number) => {
+    console.log(linked.value)
+    if(linked.value == oldLink.value){
+      console.log('son iguales')
+      return
+    }else{
+      console.log('son diferentes')
+      //aca debemos enviar el socket al 
+      socket.emit('nuevoLink', { link:linked.value, valor:valor })
+    }
+  }
   const copy = (async(placa:string, soc:string) => {
     socketPlacaConsultada.value = soc
     try {
@@ -113,6 +135,27 @@
         </div>
       </div>
     </div>
+    <!-- <Links/> -->
+    <div>
+      <br><br>
+      <table class="table table-hover table-info container border border-rounded">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>precio</th>
+            <th>url</th>
+          </tr>
+        </thead>
+        <tbody  v-for="link,index in storeTienda.links">
+          <tr>
+            <td>{{ index+1 }}</td>
+            <td><div>{{ link.valor }} <span><div class="ms-2 btn btn-warning">Editar precio</div></span></div></td>
+            <td v-if="!link.editar">{{ link.url }} <span><div class=" ms-2 btn btn-info" @click="storeTienda.links[index].editar = true, linked = link.url, oldLink = link.url">editar link</div></span></td>
+            <td v-else class="col"><input type="text" class="form-control" v-model="linked"/> <span><div class=" ms-2 btn btn-info" @click="guardarNuvoLink(link.valor), storeTienda.links[index].editar = false">guardar nuevo link</div></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div> 
 </div>
 </template>
 
