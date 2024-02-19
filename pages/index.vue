@@ -76,6 +76,7 @@
         info : infoPlacaConsultada.value
       }
       socket.emit('retornandoInfoPlaca', data)
+      infoPlacaConsultada.value = null
       return
     }
     if(val=='noRegistred'){
@@ -99,7 +100,7 @@
 
 <template>
   <div>
-    <Dialog class="bg-white" v-model:visible="espera" modal :pt="{}" :closeOnEscape="false" :closable="false">
+    <Dialog class="bg-white" v-model:visible="espera" modal :pt="{}" :closeOnEscape="false" :closable="false" close>
       <div class="card-body rounded">
         <div class="text-center mb-2">
           Porfavor ingresa aqui el texto copiado de sura
@@ -116,7 +117,8 @@
         <div class="row">
           <div class="border rounded border-secondary p-2 m-2 col">{{ visitanteP.socket }}</div>
           <div class="btn border rounded border-secondary p-2 m-2 col" @click="copy(visitanteP.placa, visitanteP.socket)">{{ visitanteP.placa }}</div>
-          <div class="btn p-2 m-2 col" :style="visitanteP.color" @click="copy(visitanteP.placa, visitanteP.socket)">{{ visitanteP.text }} <Icon name="material-symbols:content-copy"/></div>
+          <div class="btn p-2 m-2 col" :style="visitanteP.color" @click="copy(visitanteP.placa, visitanteP.socket)" v-if="visitanteP.text == 'Copiar Placa para buscar'">{{ visitanteP.text }} <Icon name="material-symbols:content-copy"/></div>
+          <div class="btn p-2 m-2 col" :style="visitanteP.color" v-else>{{ visitanteP.text }} <Icon name="material-symbols:content-copy"/></div>
         </div>
       </div>
     </div>
