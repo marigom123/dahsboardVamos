@@ -96,6 +96,10 @@
       return
     }
   }
+  const limpiar = () => {
+    socket.emit('limpiarVisitantes')
+    return
+  }
 </script>
 
 <template>
@@ -136,6 +140,7 @@
           <div class="border rounded border-secondary p-2 m-2 col">{{ admin.rol }}</div>
         </div>
       </div>
+      <div class="btn btn-danger col-12 p-2 m-2" @click="limpiar()">Limpiar visitantes</div>
     </div>
     <!-- <Links/> -->
     <div>
