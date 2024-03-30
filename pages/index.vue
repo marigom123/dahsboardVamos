@@ -20,7 +20,7 @@
   const visitantesPlaca:any = ref()
   
   onMounted(() => {
-    console.log('se esta ejecutando')
+    console.log('se esta ejecutandoerdfs')
     console.log(config.public.SOCKET)
     socket.on("connect", async() => {
       console.log('Ahora estamos conectados al servidor de sockets: '+socket.id)
