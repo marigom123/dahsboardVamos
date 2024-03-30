@@ -21,6 +21,7 @@
   
   onMounted(() => {
     console.log('se esta ejecutando')
+    console.log(config.public.SOCKET)
     socket.on("connect", async() => {
       console.log('Ahora estamos conectados al servidor de sockets: '+socket.id)
       sockt.value = socket.id
