@@ -29,6 +29,8 @@
     socket.on('links', async(data:any) => {
       console.log('se esta emitiendo pedir links')
       storeTienda.setLinks(data)
+      console.log('estos son los links')
+      console.log(data)
     })
     socket.on("updateAdmins", (data:any) => {
       console.log('Ahora llego el socket de actualizar admins')
