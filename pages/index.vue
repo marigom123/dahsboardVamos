@@ -8,7 +8,7 @@
   const ls = ref(storeTienda.links)
   const linked = ref()
   const oldLink = ref()
-  
+  const nuevoPrecio = ref()
   const config = useRuntimeConfig()
   const socket = io(config.public.SOCKET);
   const sockt = ref()
@@ -18,6 +18,7 @@
   const infoPlacaConsultada = ref()
   const visitantes:any = ref()
   const visitantesPlaca:any = ref()
+  const editarValor = ref(false)
   
   onMounted(() => {
     console.log('se esta ejecutandoerdfs')
@@ -51,16 +52,23 @@
       }
     });
   })
-  const guardarNuvoLink = (valor:number) => {
-    console.log(linked.value)
+  const guardarNuvoLink = (valor:number, id:any) => {
     if(linked.value == oldLink.value){
       console.log('son iguales')
       return
     }else{
       console.log('son diferentes')
       //aca debemos enviar el socket al 
-      socket.emit('nuevoLink', { link:linked.value, valor:valor })
+      socket.emit('nuevoLink', { link:linked.value, valor:valor, id })
     }
+  }
+  const guardarNuevoprecio = (nuevoPrecio: any, link:any ) =>{
+    if(nuevoPrecio==link.valor){
+      console.log('los preciuos son iguales')
+      editarValor.value = false
+      return
+    }
+    socket.emit('nuevoPrecio', {nuevoPrecio, id:link._id})
   }
   const copy = (async(placa:string, soc:string) => {
     socketPlacaConsultada.value = soc
@@ -154,14 +162,18 @@
             <th>#</th>
             <th>precio</th>
             <th>url</th>
+            <th>Usado</th>
           </tr>
         </thead>
-        <tbody  v-for="link,index in storeTienda.links">
+        <tbody  v-for="link,index in storeTienda.links" :key="index">
           <tr>
             <td>{{ index+1 }}</td>
-            <td><div>{{ link.valor }} <span><div class="ms-2 btn btn-warning">Editar precio</div></span></div></td>
-            <td v-if="!link.editar">{{ link.url }} <span><div class=" ms-2 btn btn-info" @click="storeTienda.links[index].editar = true, linked = link.url, oldLink = link.url">editar link</div></span></td>
-            <td v-else class="col"><input type="text" class="form-control" v-model="linked"/> <span><div class=" ms-2 btn btn-info" @click="guardarNuvoLink(link.valor), storeTienda.links[index].editar = false">guardar nuevo link</div></span></td>
+            <td v-if="!link.editarValor"><div>{{ link.valor }} <span><div class="ms-2 btn btn-warning" @click="link.editarValor=true, storeTienda.links[index].editarValor = true">Editar precioo</div></span></div></td>
+            <td v-else><input type="text" class="form-control" v-model="nuevoPrecio"/> <span><div class=" ms-2 btn btn-info" @click="guardarNuevoprecio(nuevoPrecio, link), storeTienda.links[index].editarValor = false">guardar nuevo precio</div></span></td>
+            <td v-if="!link.editar"><div v-if="link.usado" class="bg-danger"> {{ link.url }} </div><div v-else> {{ link.url }} </div><span><div class=" ms-2 btn btn-info" @click="storeTienda.links[index].editar = true, linked = link.url, oldLink = link.url">editar link</div></span></td>
+            <td v-else class="col"><input type="text" class="form-control" v-model="linked"/> <span><div class=" ms-2 btn btn-info" @click="guardarNuvoLink(link.valor, link._id), storeTienda.links[index].editar = false">guardar nuevo link</div></span></td>
+            <td v-if="link.usado" class="bg-danger">♻️</td>
+            <td v-else>✅</td>
           </tr>
         </tbody>
       </table>
